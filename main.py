@@ -151,22 +151,14 @@ def generate_pdf():
 
 def create_ui():
     """Create the NiceGUI interface"""
-    ui.markdown('# Berichtsheft Generator')
-    
-    with ui.card().style('width: 100%; max-width: 800px; margin: 0 auto;'):
-        ui.markdown('## Personal Information')
+    ui.markdown('## Berichtsheft Generator').style('display: flex; width: 100%; justify-content: center;')
+
+    with ui.column().style('width: 100%; max-width: 800px; margin: 0 auto; border-radius: 22px;'):
+        ui.markdown('### Personal Information')
         
         # Name field
         name_input = ui.input('Name', value=fields.name.content).style('width: 100%')
         name_input.bind_value(fields.name, 'content')
-        
-        # Week number and training year
-        with ui.row().style('width: 100%; gap: 1rem'):
-            week_input = ui.input('Week Number', value=fields.week_no.content).style('flex: 1')
-            week_input.bind_value(fields.week_no, 'content')
-            
-            year_input = ui.input('Training Year', value=fields.ausbildung_jahr.content).style('flex: 1')
-            year_input.bind_value(fields.ausbildung_jahr, 'content')
         
         # Profession and department
         with ui.row().style('width: 100%; gap: 1rem'):
@@ -176,100 +168,121 @@ def create_ui():
             abteilung_input = ui.input('Department', value=fields.abteilung.content).style('flex: 1')
             abteilung_input.bind_value(fields.abteilung, 'content')
         
-        # Date range
-        with ui.row().style('width: 100%; gap: 1rem'):
-            start_date_input = ui.input('Start Date', value=fields.start_date.content).style('flex: 1')
-            start_date_input.bind_value(fields.start_date, 'content')
-            
-            end_date_input = ui.input('End Date', value=fields.end_date.content).style('flex: 1')
-            end_date_input.bind_value(fields.end_date, 'content')
-            
-            # Auto-compute end date when start date changes
-            def on_start_date_change():
-                if fields.start_date.content.strip():
-                    computed_end = compute_end_date_from_start(fields.start_date.content)
-                    if computed_end:
-                        fields.end_date.content = computed_end
-                        end_date_input.value = computed_end
-            
-            start_date_input.on('blur', on_start_date_change)
-        
-        # Week navigation buttons
-        with ui.row().style('width: 100%; gap: 0.5rem; justify-content: center; margin-top: 0.5rem'):
-            def go_to_previous_week():
-                base_date = fields.start_date.content or fields.end_date.content
-                monday, friday = get_week_dates(base_date, -1)
-                if monday and friday:
-                    fields.start_date.content = monday
-                    fields.end_date.content = friday
-                    start_date_input.value = monday
-                    end_date_input.value = friday
-                    
-                    # Decrement week number
-                    current_week = fields.week_no.content.strip()
-                    if current_week.isdigit():
-                        new_week = max(1, int(current_week) - 1)  # Don't go below 1
-                        fields.week_no.content = str(new_week)
-                        week_input.value = str(new_week)
-            
-            def go_to_next_week():
-                base_date = fields.start_date.content or fields.end_date.content
-                monday, friday = get_week_dates(base_date, 1)
-                if monday and friday:
-                    fields.start_date.content = monday
-                    fields.end_date.content = friday
-                    start_date_input.value = monday
-                    end_date_input.value = friday
-                    
-                    # Increment week number
-                    current_week = fields.week_no.content.strip()
-                    if current_week.isdigit():
-                        new_week = int(current_week) + 1
-                        fields.week_no.content = str(new_week)
-                        week_input.value = str(new_week)
-                    elif not current_week:  # If empty, start at 1
-                        fields.week_no.content = "1"
-                        week_input.value = "1"
-            
-            def go_to_current_week():
-                monday, friday = get_week_dates("", 0)  # Current week
-                if monday and friday:
-                    fields.start_date.content = monday
-                    fields.end_date.content = friday
-                    start_date_input.value = monday
-                    end_date_input.value = friday
-                    # Note: Current week button doesn't change week number
-            
-            ui.button('← Previous Week', on_click=go_to_previous_week).props('size=sm color=secondary')
-            ui.button('This Week', on_click=go_to_current_week).props('size=sm color=primary')
-            ui.button('Next Week →', on_click=go_to_next_week).props('size=sm color=secondary')
-    
-    with ui.card().style('width: 100%; max-width: 800px; margin: 1rem auto;'):
+    with ui.column().style('width: 100%; max-width: 800px; margin: 1rem auto;'):
         ui.markdown('### Activities')
+        with ui.card().style('width: 100%; gap: 1rem; padding: 22px; border-radius: 22px;'):
+            # Week number and training year
+            with ui.row().style('width: 100%; gap: 1rem'):
+                week_input = ui.input('Week Number', value=fields.week_no.content).style('flex: 1')
+                week_input.bind_value(fields.week_no, 'content')
+                
+                year_input = ui.input('Training Year', value=fields.ausbildung_jahr.content).style('flex: 1')
+                year_input.bind_value(fields.ausbildung_jahr, 'content')
+            
+            # Date range
+            with ui.row().style('width: 100%; gap: 1rem'):
+                start_date_input = ui.input('Start Date', value=fields.start_date.content).style('flex: 1')
+                start_date_input.bind_value(fields.start_date, 'content')
+                
+                end_date_input = ui.input('End Date', value=fields.end_date.content).style('flex: 1')
+                end_date_input.bind_value(fields.end_date, 'content')
+                
+                # Auto-compute end date when start date changes
+                def on_start_date_change():
+                    if fields.start_date.content.strip():
+                        computed_end = compute_end_date_from_start(fields.start_date.content)
+                        if computed_end:
+                            fields.end_date.content = computed_end
+                            end_date_input.value = computed_end
+                
+                start_date_input.on('blur', on_start_date_change)
+            
+            # Week navigation buttons
+            with ui.row().style('width: 100%; gap: 0.5rem; justify-content: center; margin-top: 0.5rem'):
+                def go_to_previous_week():
+                    base_date = fields.start_date.content or fields.end_date.content
+                    monday, friday = get_week_dates(base_date, -1)
+                    if monday and friday:
+                        fields.start_date.content = monday
+                        fields.end_date.content = friday
+                        start_date_input.value = monday
+                        end_date_input.value = friday
+                        
+                        # Decrement week number
+                        current_week = fields.week_no.content.strip()
+                        if current_week.isdigit():
+                            new_week = max(1, int(current_week) - 1)  # Don't go below 1
+                            fields.week_no.content = str(new_week)
+                            week_input.value = str(new_week)
+                
+                def go_to_next_week():
+                    base_date = fields.start_date.content or fields.end_date.content
+                    monday, friday = get_week_dates(base_date, 1)
+                    if monday and friday:
+                        fields.start_date.content = monday
+                        fields.end_date.content = friday
+                        start_date_input.value = monday
+                        end_date_input.value = friday
+                        
+                        # Increment week number
+                        current_week = fields.week_no.content.strip()
+                        if current_week.isdigit():
+                            new_week = int(current_week) + 1
+                            fields.week_no.content = str(new_week)
+                            week_input.value = str(new_week)
+                        elif not current_week:  # If empty, start at 1
+                            fields.week_no.content = "1"
+                            week_input.value = "1"
+                
+                def go_to_current_week():
+                    monday, friday = get_week_dates("", 0)  # Current week
+                    if monday and friday:
+                        fields.start_date.content = monday
+                        fields.end_date.content = friday
+                        start_date_input.value = monday
+                        end_date_input.value = friday
+                        # Note: Current week button doesn't change week number
+
+                ui.button('← Previous Week', on_click=go_to_previous_week).props('size=sm color=secondary').style('border-radius: 100px;')
+                ui.button('This Week', on_click=go_to_current_week).props('size=sm color=primary').style('border-radius: 100px;')
+                ui.button('Next Week →', on_click=go_to_next_week).props('size=sm color=secondary').style('border-radius: 100px;')
+
+        # Work textarea
+        with ui.column().style("gap: 0; width: 100%;"):
+            ui.markdown('#### Work').style('margin-left: 16px;')
+            with ui.card().style('width: 100%; gap: 1rem; padding: 22px; border-radius: 22px;'):
+                with ui.row().style('width: 100%; gap: 2rem; margin-bottom: 8px;'):
+                    texts_1_input = ui.textarea(label='Work', value=fields.texts_1.content, placeholder='e.g. Work on Angular Services, etc.').props('autogrow').style('flex: 1;')
+                    texts_1_input.bind_value_to(fields.texts_1, 'content')
+                    
+                    hour_1_input = ui.input('Hours 1', value=fields.hour_1.content).style('width: 100px')
+                    hour_1_input.bind_value(fields.hour_1, 'content')
         
-        # Text fields for activities
-        texts_1_input = ui.textarea(label='Work', value=fields.texts_1.content, placeholder='Enter work activities for this period...').props('autogrow').style('width: 100%; min-height: 100px')
-        texts_1_input.bind_value_to(fields.texts_1, 'content')
+
+        # Learning textarea
+        with ui.column().style("gap: 0; width: 100%;"):
+            ui.markdown('#### Learning').style('margin-left: 16px;')
+            with ui.card().style('width: 100%; gap: 1rem; padding: 22px; border-radius: 22px;'):
+                with ui.row().style('width: 100%; gap: 2rem; margin-bottom: 8px;'):
+                    texts_2_input = ui.textarea(label='Unterweisungen', value=fields.texts_2.content, placeholder='e.g. Supply chain, how to write a document, etc.').props('autogrow').style('flex: 1;')
+                    texts_2_input.bind_value_to(fields.texts_2, 'content')
+                    
+                    hour_2_input = ui.input('Hours 2', value=fields.hour_2.content).style('width: 100px')
+                    hour_2_input.bind_value(fields.hour_2, 'content')
+
+        # School textarea
+        with ui.column().style("gap: 0; width: 100%;"):
+            ui.markdown('#### School').style('margin-left: 16px;')
+            with ui.card().style('width: 100%; gap: 1rem; padding: 22px; border-radius: 22px;'):
+                with ui.row().style('width: 100%; gap: 2rem; margin-bottom: 8px;'):
+                    texts_3_input = ui.textarea(label='School activities', value=fields.texts_3.content, placeholder='e.g. LF5: Datenbank Technologien, etc.').props('autogrow').style('flex: 1;')
+                    texts_3_input.bind_value_to(fields.texts_3, 'content')
+                    
+                    hour_3_input = ui.input('Hours 3', value=fields.hour_3.content).style('width: 100px')
+                    hour_3_input.bind_value(fields.hour_3, 'content')
         
-        hour_1_input = ui.input('Hours 1', value=fields.hour_1.content).style('width: 100px')
-        hour_1_input.bind_value(fields.hour_1, 'content')
-        
-        ui.separator()
-        
-        texts_2_input = ui.textarea(label='Unterweisungen', value=fields.texts_2.content, placeholder='Enter work activities for this period...').props('autogrow').style('width: 100%; min-height: 100px')
-        texts_2_input.bind_value_to(fields.texts_2, 'content')
-        
-        hour_2_input = ui.input('Hours 2', value=fields.hour_2.content).style('width: 100px')
-        hour_2_input.bind_value(fields.hour_2, 'content')
-        
-        ui.separator()
-        
-        texts_3_input = ui.textarea(label='School activities', value=fields.texts_3.content, placeholder='Enter work activities for this period...').props('autogrow').style('width: 100%; min-height: 100px')
-        texts_3_input.bind_value_to(fields.texts_3, 'content')
-        
-        hour_3_input = ui.input('Hours 3', value=fields.hour_3.content).style('width: 100px')
-        hour_3_input.bind_value(fields.hour_3, 'content')
-    
+
+
     # with ui.card().style('width: 100%; max-width: 800px; margin: 1rem auto;'):
     #     ui.markdown('## Signature Dates')
         
@@ -281,8 +294,8 @@ def create_ui():
     #         date_sign_2_input.bind_value_to(fields.date_of_sign_2, 'content')
     
     # Generate PDF button
-    with ui.card().style('width: 100%; max-width: 800px; margin: 1rem auto; text-align: center;'):
-        ui.button('Generate PDF', on_click=generate_pdf).props('color=primary size=lg')
+    with ui.row().style('width: 100%; max-width: 800px; margin: 1rem auto; text-align: center; border-radius: 22px; justify-content: center;'):
+        ui.button('Generate PDF', on_click=generate_pdf).props('color=primary size=lg').style('border-radius: 100px;')
 
 def main():
     """Main function to set up and run the application"""

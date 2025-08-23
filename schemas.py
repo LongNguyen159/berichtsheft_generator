@@ -63,7 +63,7 @@ class Fields:
         """Return fields that need text wrapping with their maximum widths in points"""
         # Type-safe approach: reference the actual field attributes and get their names
         wrapping_config = [
-            (self.texts_1, 550),
+            (self.texts_1, 475),
             (self.texts_2, 475), 
             (self.texts_3, 475),
         ]

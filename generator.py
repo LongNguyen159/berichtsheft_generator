@@ -42,8 +42,8 @@ def create_overlay(data: dict, coords: dict, font="Helvetica", font_size=12, lin
         if field in field_max_widths:
             max_width = field_max_widths[field]
             # Estimate characters per line based on font size (rough approximation)
-            chars_per_line = int(max_width / (font_size * 0.6))  # 0.6 is approximate char width ratio
-            
+            chars_per_line = int(max_width / (font_size * 0.5))  # 0.5 is approximate char width ratio
+
             for line in str(value).split("\n"):
                 if len(line) <= chars_per_line:
                     textobject.textLine(line)

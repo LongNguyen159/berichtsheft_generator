@@ -59,3 +59,10 @@ class Fields:
     def as_data(self) -> Dict[str, str]:
         return {name: f.content for name, f in self.__dict__.items()}
 
+    def get_text_wrapping_fields(self) -> Dict[str, int]:
+        """Return fields that need text wrapping with their maximum widths in points"""
+        return {
+            name: 475 for name in self.__dict__.keys() 
+            if name.startswith('texts_')
+        }
+

@@ -49,6 +49,7 @@ def generate_pdf():
             fields.as_coords(),
             font_size=12,
             line_spacing=14,
+            field_max_widths=fields.get_text_wrapping_fields()
         )
         
         ui.notify(f'PDF generated successfully: {output_file_path}', type='positive')

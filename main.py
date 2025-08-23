@@ -29,11 +29,18 @@ def generate_pdf():
             
         start_date_formatted = fields.start_date.content.replace("/", "_")
         
+        # Build filename with optional week number
+        week_content = fields.week_no.content.strip()
+        if week_content and week_content != "0":
+            filename = f"berichtsheft_w{week_content}_{start_date_formatted}.pdf"
+        else:
+            filename = f"berichtsheft_w{start_date_formatted}.pdf"
+        
         # Create output directory if it doesn't exist
         # TODO: Make output_dir configurable. output_file_path stays.
         output_dir = Path.home() / "Documents" / "School" / "Berichtsheft" / "berichtsheft AP2"
         output_dir.mkdir(parents=True, exist_ok=True)
-        output_file_path = output_dir / f"berichtsheft-w{start_date_formatted}.pdf"
+        output_file_path = output_dir / filename
 
         insert_text_on_pdf(
             str(TEMPLATE_PATH),
@@ -85,10 +92,10 @@ def create_ui():
             end_date_input.bind_value(fields.end_date, 'content')
     
     with ui.card().style('width: 100%; max-width: 800px; margin: 1rem auto;'):
-        ui.markdown('## Work Activities')
+        ui.markdown('### Activities')
         
         # Text fields for activities
-        texts_1_input = ui.textarea(label='Activity 1', value=fields.texts_1.content, placeholder='Enter work activities for this period...').props('autogrow').style('width: 100%; min-height: 100px')
+        texts_1_input = ui.textarea(label='Work', value=fields.texts_1.content, placeholder='Enter work activities for this period...').props('autogrow').style('width: 100%; min-height: 100px')
         texts_1_input.bind_value_to(fields.texts_1, 'content')
         
         hour_1_input = ui.input('Hours 1', value=fields.hour_1.content).style('width: 100px')
@@ -96,7 +103,7 @@ def create_ui():
         
         ui.separator()
         
-        texts_2_input = ui.textarea(label='Activity 2', value=fields.texts_2.content, placeholder='Enter work activities for this period...').props('autogrow').style('width: 100%; min-height: 100px')
+        texts_2_input = ui.textarea(label='Unterweisungen', value=fields.texts_2.content, placeholder='Enter work activities for this period...').props('autogrow').style('width: 100%; min-height: 100px')
         texts_2_input.bind_value_to(fields.texts_2, 'content')
         
         hour_2_input = ui.input('Hours 2', value=fields.hour_2.content).style('width: 100px')
@@ -104,21 +111,21 @@ def create_ui():
         
         ui.separator()
         
-        texts_3_input = ui.textarea(label='Activity 3', value=fields.texts_3.content, placeholder='Enter work activities for this period...').props('autogrow').style('width: 100%; min-height: 100px')
+        texts_3_input = ui.textarea(label='School activities', value=fields.texts_3.content, placeholder='Enter work activities for this period...').props('autogrow').style('width: 100%; min-height: 100px')
         texts_3_input.bind_value_to(fields.texts_3, 'content')
         
         hour_3_input = ui.input('Hours 3', value=fields.hour_3.content).style('width: 100px')
         hour_3_input.bind_value(fields.hour_3, 'content')
     
-    with ui.card().style('width: 100%; max-width: 800px; margin: 1rem auto;'):
-        ui.markdown('## Signature Dates')
+    # with ui.card().style('width: 100%; max-width: 800px; margin: 1rem auto;'):
+    #     ui.markdown('## Signature Dates')
         
-        with ui.row().style('width: 100%; gap: 1rem'):
-            date_sign_1_input = ui.input('Signature Date 1', value=fields.date_of_sign.content).style('flex: 1')
-            date_sign_1_input.bind_value(fields.date_of_sign, 'content')
+    #     with ui.row().style('width: 100%; gap: 1rem'):
+    #         date_sign_1_input = ui.input('Signature Date 1', value=fields.date_of_sign.content).style('flex: 1')
+    #         date_sign_1_input.bind_value(fields.date_of_sign, 'content')
             
-            date_sign_2_input = ui.input('Signature Date 2', value=fields.date_of_sign_2.content).style('flex: 1')
-            date_sign_2_input.bind_value_to(fields.date_of_sign_2, 'content')
+    #         date_sign_2_input = ui.input('Signature Date 2', value=fields.date_of_sign_2.content).style('flex: 1')
+    #         date_sign_2_input.bind_value_to(fields.date_of_sign_2, 'content')
     
     # Generate PDF button
     with ui.card().style('width: 100%; max-width: 800px; margin: 1rem auto; text-align: center;'):

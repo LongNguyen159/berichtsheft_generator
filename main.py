@@ -128,9 +128,8 @@ def generate_pdf():
         else:
             filename = f"berichtsheft_w{start_date_formatted}.pdf"
         
-        # Create output directory if it doesn't exist
-        # TODO: Make output_dir configurable. output_file_path stays.
-        output_dir = Path.home() / "Documents" / "School" / "Berichtsheft" / "berichtsheft AP2"
+        # Create output directory if it doesn't exist (now configurable)
+        output_dir = Path(fields.output_directory.content)
         output_dir.mkdir(parents=True, exist_ok=True)
         output_file_path = output_dir / filename
 
@@ -154,11 +153,22 @@ def create_ui():
     ui.markdown('## Berichtsheft Generator').style('display: flex; width: 100%; justify-content: center;')
 
     with ui.column().style('width: 100%; max-width: 800px; margin: 0 auto; border-radius: 22px;'):
-        ui.markdown('### Personal Information')
+        ui.markdown('### Basic Information')
+        # Output directory field with browse button
+        with ui.row().style('width: 100%; gap: 0.5rem'):
+            output_dir_input = ui.input('Output Directory', value=fields.output_directory.content, placeholder='Where to save generated PDFs').style('flex: 1')
+            output_dir_input.bind_value(fields.output_directory, 'content')
+            
+            def browse_folder():
+                # For now, show a notification with instructions since file dialogs are complex in web UI
+                ui.notify('Copy and paste the folder path where you want to save PDFs', type='info')
+            
+            ui.button('📁', on_click=browse_folder).props('size=sm').style('align-self: end; margin-bottom: 6px')
         
         # Name field
         name_input = ui.input('Name', value=fields.name.content).style('width: 100%')
         name_input.bind_value(fields.name, 'content')
+        
         
         # Profession and department
         with ui.row().style('width: 100%; gap: 1rem'):

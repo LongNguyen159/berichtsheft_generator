@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Tuple, Dict
 from reportlab.lib.pagesizes import A4
+from pathlib import Path
 import textwrap
 
 
@@ -48,16 +49,23 @@ class Fields:
 
     date_of_sign: Field = field(default_factory=lambda: Field((50, adjust_y(716))))
     date_of_sign_2: Field = field(default_factory=lambda: Field((305, adjust_y(716))))
+    
+    # UI configuration fields (not rendered to PDF)
+    output_directory: Field = field(default_factory=lambda: Field((0, 0), str(Path.home() / "Documents" / "School" / "Berichtsheft" / "berichtsheft AP2")))
 
     def as_dict(self) -> Dict[str, Field]:
         """Return dict-like view, useful for iterating in PDF generator."""
         return self.__dict__
 
     def as_coords(self) -> Dict[str, Tuple[float, float]]:
-        return {name: f.coords for name, f in self.__dict__.items()}
+        """Return coordinates for PDF fields only (excludes UI configuration fields)"""
+        ui_fields = {'output_directory'}  # Fields that are UI-only
+        return {name: f.coords for name, f in self.__dict__.items() if name not in ui_fields}
 
     def as_data(self) -> Dict[str, str]:
-        return {name: f.content for name, f in self.__dict__.items()}
+        """Return data for PDF fields only (excludes UI configuration fields)"""
+        ui_fields = {'output_directory'}  # Fields that are UI-only
+        return {name: f.content for name, f in self.__dict__.items() if name not in ui_fields}
 
     def get_text_wrapping_fields(self) -> Dict[str, int]:
         """Return fields that need text wrapping with their maximum widths in points"""

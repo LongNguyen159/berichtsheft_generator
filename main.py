@@ -2,12 +2,100 @@ from pathlib import Path
 from schemas import Fields
 from generator import insert_text_on_pdf
 from nicegui import ui
+from datetime import datetime, timedelta
 
 BASE_DIR = Path(__file__).resolve().parent
 TEMPLATE_PATH = BASE_DIR / "templates" / "berichtsheft_wochenlich_template.pdf"
 
 # Global fields instance for the UI
 fields = Fields()
+
+def compute_end_date_from_start(start_date_str: str) -> str:
+    """
+    Compute end date (Friday) from start date (Monday).
+    Supports formats: DD/MM/YYYY, DD-MM-YYYY, DD.MM.YYYY
+    """
+    if not start_date_str.strip():
+        return ""
+    
+    try:
+        # Try different date formats
+        formats = ["%d/%m/%Y", "%d-%m-%Y", "%d.%m.%Y"]
+        start_date = None
+        
+        for fmt in formats:
+            try:
+                start_date = datetime.strptime(start_date_str.strip(), fmt)
+                break
+            except ValueError:
+                continue
+        
+        if start_date is None:
+            return ""  # Could not parse date
+        
+        # Add 4 days to get from Monday to Friday (Monday + 4 days = Friday)
+        end_date = start_date + timedelta(days=4)
+        
+        # Return in the same format as input (detect by separator)
+        if "/" in start_date_str:
+            return end_date.strftime("%d/%m/%Y")
+        elif "-" in start_date_str:
+            return end_date.strftime("%d-%m-%Y")
+        else:
+            return end_date.strftime("%d.%m.%Y")
+            
+    except Exception:
+        return ""  # Return empty string if any error occurs
+
+def get_week_dates(base_date_str: str, weeks_offset: int) -> tuple[str, str]:
+    """
+    Get Monday and Friday dates for a week relative to base_date.
+    
+    Args:
+        base_date_str: Current date string in any supported format
+        weeks_offset: Number of weeks to add/subtract (negative for previous weeks)
+    
+    Returns:
+        Tuple of (monday_str, friday_str) in the same format as input
+    """
+    try:
+        if not base_date_str.strip():
+            # If no base date, use current date
+            base_date = datetime.now()
+            format_str = "%d/%m/%Y"
+        else:
+            # Parse the base date
+            formats = ["%d/%m/%Y", "%d-%m-%Y", "%d.%m.%Y"]
+            base_date = None
+            format_str = "%d/%m/%Y"  # Default format
+            
+            for fmt in formats:
+                try:
+                    base_date = datetime.strptime(base_date_str.strip(), fmt)
+                    format_str = fmt
+                    break
+                except ValueError:
+                    continue
+            
+            if base_date is None:
+                return "", ""
+        
+        # Find the Monday of the base week
+        days_since_monday = base_date.weekday()  # Monday is 0, Sunday is 6
+        current_monday = base_date - timedelta(days=days_since_monday)
+        
+        # Calculate the target week's Monday
+        target_monday = current_monday + timedelta(weeks=weeks_offset)
+        target_friday = target_monday + timedelta(days=4)
+        
+        # Format dates
+        monday_str = target_monday.strftime(format_str)
+        friday_str = target_friday.strftime(format_str)
+        
+        return monday_str, friday_str
+        
+    except Exception:
+        return "", ""
 
 def set_default_values():
     """Set default values for the fields"""
@@ -18,6 +106,10 @@ def set_default_values():
 def generate_pdf():
     """Generate the PDF with current field values"""
     try:
+        # Auto-compute end date from start date if end date is empty
+        if fields.start_date.content.strip() and not fields.end_date.content.strip():
+            fields.end_date.content = compute_end_date_from_start(fields.start_date.content)
+        
         # Computed Fields
         fields.date_of_sign.content = fields.end_date.content
         fields.date_of_sign_2.content = fields.end_date.content
@@ -91,6 +183,48 @@ def create_ui():
             
             end_date_input = ui.input('End Date', value=fields.end_date.content).style('flex: 1')
             end_date_input.bind_value(fields.end_date, 'content')
+            
+            # Auto-compute end date when start date changes
+            def on_start_date_change():
+                if fields.start_date.content.strip():
+                    computed_end = compute_end_date_from_start(fields.start_date.content)
+                    if computed_end:
+                        fields.end_date.content = computed_end
+                        end_date_input.value = computed_end
+            
+            start_date_input.on('blur', on_start_date_change)
+        
+        # Week navigation buttons
+        with ui.row().style('width: 100%; gap: 0.5rem; justify-content: center; margin-top: 0.5rem'):
+            def go_to_previous_week():
+                base_date = fields.start_date.content or fields.end_date.content
+                monday, friday = get_week_dates(base_date, -1)
+                if monday and friday:
+                    fields.start_date.content = monday
+                    fields.end_date.content = friday
+                    start_date_input.value = monday
+                    end_date_input.value = friday
+            
+            def go_to_next_week():
+                base_date = fields.start_date.content or fields.end_date.content
+                monday, friday = get_week_dates(base_date, 1)
+                if monday and friday:
+                    fields.start_date.content = monday
+                    fields.end_date.content = friday
+                    start_date_input.value = monday
+                    end_date_input.value = friday
+            
+            def go_to_current_week():
+                monday, friday = get_week_dates("", 0)  # Current week
+                if monday and friday:
+                    fields.start_date.content = monday
+                    fields.end_date.content = friday
+                    start_date_input.value = monday
+                    end_date_input.value = friday
+            
+            ui.button('← Previous Week', on_click=go_to_previous_week).props('size=sm color=secondary')
+            ui.button('This Week', on_click=go_to_current_week).props('size=sm color=primary')
+            ui.button('Next Week →', on_click=go_to_next_week).props('size=sm color=secondary')
     
     with ui.card().style('width: 100%; max-width: 800px; margin: 1rem auto;'):
         ui.markdown('### Activities')

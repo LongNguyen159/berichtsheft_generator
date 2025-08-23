@@ -204,6 +204,13 @@ def create_ui():
                     fields.end_date.content = friday
                     start_date_input.value = monday
                     end_date_input.value = friday
+                    
+                    # Decrement week number
+                    current_week = fields.week_no.content.strip()
+                    if current_week.isdigit():
+                        new_week = max(1, int(current_week) - 1)  # Don't go below 1
+                        fields.week_no.content = str(new_week)
+                        week_input.value = str(new_week)
             
             def go_to_next_week():
                 base_date = fields.start_date.content or fields.end_date.content
@@ -213,6 +220,16 @@ def create_ui():
                     fields.end_date.content = friday
                     start_date_input.value = monday
                     end_date_input.value = friday
+                    
+                    # Increment week number
+                    current_week = fields.week_no.content.strip()
+                    if current_week.isdigit():
+                        new_week = int(current_week) + 1
+                        fields.week_no.content = str(new_week)
+                        week_input.value = str(new_week)
+                    elif not current_week:  # If empty, start at 1
+                        fields.week_no.content = "1"
+                        week_input.value = "1"
             
             def go_to_current_week():
                 monday, friday = get_week_dates("", 0)  # Current week
@@ -221,6 +238,7 @@ def create_ui():
                     fields.end_date.content = friday
                     start_date_input.value = monday
                     end_date_input.value = friday
+                    # Note: Current week button doesn't change week number
             
             ui.button('← Previous Week', on_click=go_to_previous_week).props('size=sm color=secondary')
             ui.button('This Week', on_click=go_to_current_week).props('size=sm color=primary')

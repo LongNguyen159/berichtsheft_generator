@@ -27,19 +27,27 @@ class Field:
 # Define schema of all fields
 @dataclass
 class Fields:
-    name: Field = field(default_factory=lambda: Field((50, adjust_y(75)), "My default name"))
-    week_no: Field = field(default_factory=lambda: Field((505, adjust_y(52))))
-    beruf: Field = field(default_factory=lambda: Field((150, adjust_y(101))))
-    ausbildung_jahr: Field = field(default_factory=lambda: Field((527, adjust_y(101))))
-    start_date: Field = field(default_factory=lambda: Field((171, 712)))
-    end_date: Field = field(default_factory=lambda: Field((257, 712)))
-    texts_1: Field = field(default_factory=lambda: Field((50, 650)))
-    texts_2: Field = field(default_factory=lambda: Field((100, 650)))
-    texts_3: Field = field(default_factory=lambda: Field((100, 600)))
-    hour_1: Field = field(default_factory=lambda: Field((400, 700)))
-    hour_2: Field = field(default_factory=lambda: Field((400, 650)))
-    hour_3: Field = field(default_factory=lambda: Field((400, 600)))
-    date_of_sign: Field = field(default_factory=lambda: Field((100, 550)))
+    week_no: Field = field(default_factory=lambda: Field((505, adjust_y(44))))
+    name: Field = field(default_factory=lambda: Field((211, adjust_y(70))))
+
+    beruf: Field = field(default_factory=lambda: Field((170, adjust_y(96)), "Fachinformatiker - Anwendungsentwicklung"))
+    ausbildung_jahr: Field = field(default_factory=lambda: Field((528, adjust_y(96))))
+    abteilung: Field = field(default_factory=lambda: Field((470, adjust_y(121)), "IT-Abteilung"))
+
+    start_date: Field = field(default_factory=lambda: Field((171, adjust_y(121))))
+    end_date: Field = field(default_factory=lambda: Field((257, adjust_y(121))))
+
+    texts_1: Field = field(default_factory=lambda: Field((50, adjust_y(176))))
+    hour_1: Field = field(default_factory=lambda: Field((502, adjust_y(176))))
+
+    texts_2: Field = field(default_factory=lambda: Field((50, adjust_y(352))))
+    hour_2: Field = field(default_factory=lambda: Field((502, adjust_y(352))))
+
+    texts_3: Field = field(default_factory=lambda: Field((50, adjust_y(525))))
+    hour_3: Field = field(default_factory=lambda: Field((502, adjust_y(525))))
+
+    date_of_sign: Field = field(default_factory=lambda: Field((50, adjust_y(716))))
+    date_of_sign_2: Field = field(default_factory=lambda: Field((305, adjust_y(716))))
 
     def as_dict(self) -> Dict[str, Field]:
         """Return dict-like view, useful for iterating in PDF generator."""

@@ -61,8 +61,23 @@ class Fields:
 
     def get_text_wrapping_fields(self) -> Dict[str, int]:
         """Return fields that need text wrapping with their maximum widths in points"""
-        return {
-            name: 475 for name in self.__dict__.keys() 
-            if name.startswith('texts_')
-        }
+        # Type-safe approach: reference the actual field attributes and get their names
+        wrapping_config = [
+            (self.texts_1, 550),
+            (self.texts_2, 475), 
+            (self.texts_3, 475),
+        ]
+        
+        # Get the field names by finding which attribute matches each Field object
+        result = {}
+        field_dict = self.as_dict()
+        
+        for field_obj, width in wrapping_config:
+            # Find the attribute name that corresponds to this Field object
+            for attr_name, attr_field in field_dict.items():
+                if attr_field is field_obj:
+                    result[attr_name] = width
+                    break
+        
+        return result
 

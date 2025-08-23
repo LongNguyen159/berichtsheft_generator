@@ -12,19 +12,8 @@ fields = Fields()
 def set_default_values():
     """Set default values for the fields"""
     fields.name.content = "Thanh Long Nguyen"
-    fields.week_no.content = "59"
-    fields.start_date.content = "22/04/2024"
-    fields.end_date.content = "27/04/2024"
     fields.ausbildung_jahr.content = "2"
-    fields.texts_3.content = """\
-- GPS Zeit-Synchronisierung per PPS-Signal
-- Test down line
-- Diagnose erfolgreich
-- Noch ein Eintrag
-- Test if this new code works"""
     fields.hour_1.content = "40"
-    fields.hour_2.content = "12"
-    fields.hour_3.content = "18"
 
 def generate_pdf():
     """Generate the PDF with current field values"""

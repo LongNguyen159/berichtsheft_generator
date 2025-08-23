@@ -21,6 +21,12 @@ def generate_pdf():
         # Computed Fields
         fields.date_of_sign.content = fields.end_date.content
         fields.date_of_sign_2.content = fields.end_date.content
+        
+        # Check if start_date is empty and provide a fallback
+        if not fields.start_date.content.strip():
+            ui.notify('Please enter a start date before generating PDF', type='warning')
+            return
+            
         start_date_formatted = fields.start_date.content.replace("/", "_")
         
         # Create output directory if it doesn't exist

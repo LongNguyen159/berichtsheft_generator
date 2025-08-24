@@ -105,7 +105,8 @@ class PersistedFields:
     start_date: str = ""
     end_date: str = ""
     output_directory: str = ""
-    
+    work_hours: str = ""
+
     # Metadata
     last_saved: Optional[str] = None
     
@@ -121,6 +122,7 @@ class PersistedFields:
             start_date=fields.start_date.content,
             end_date=fields.end_date.content,
             output_directory=fields.output_directory.content,
+            work_hours=fields.hour_1.content,
             last_saved=datetime.now().isoformat()
         )
     
@@ -134,7 +136,8 @@ class PersistedFields:
         fields.start_date.content = self.start_date
         fields.end_date.content = self.end_date
         fields.output_directory.content = self.output_directory
-    
+        fields.hour_1.content = self.work_hours
+
     @classmethod
     def from_dict(cls, data: dict) -> 'PersistedFields':
         """Create PersistedFields from dictionary (for JSON loading)"""
@@ -147,5 +150,6 @@ class PersistedFields:
             start_date=data.get("start_date", ""),
             end_date=data.get("end_date", ""),
             output_directory=data.get("output_directory", ""),
-            last_saved=data.get("last_saved")
+            last_saved=data.get("last_saved"),
+            work_hours=data.get("work_hours", "")
         )

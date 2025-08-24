@@ -35,10 +35,11 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=['icons/app_icon.icns'],
 )
 app = BUNDLE(
     exe,
     name='Report Generator.app',
-    icon=None,
+    icon='icons/app_icon.icns',
     bundle_identifier=None,
 )

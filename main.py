@@ -115,10 +115,8 @@ def set_default_values():
     
     # Only set defaults if no configuration was loaded
     if not config_loaded:
-        fields.name.content = "Thanh Long Nguyen"
         fields.ausbildung_jahr.content = "2"
         fields.hour_1.content = "40"
-        # Output directory is already set in schema default
 
 def generate_pdf():
     """Generate the PDF with current field values"""

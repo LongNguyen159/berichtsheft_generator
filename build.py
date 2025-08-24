@@ -39,14 +39,36 @@ def run_nicegui_pack():
     # Determine the correct path separator for --add-data based on OS
     path_separator = ';' if system == 'Windows' else ':'
     
+    # Determine icon file based on OS
+    icon_file = None
+    if system == 'Windows':
+        icon_path = 'icons/app_icon.ico'
+    elif system == 'Darwin':  # macOS
+        icon_path = 'icons/app_icon.icns'
+    else:  # Linux
+        icon_path = 'icons/app_icon.png'
+    
+    # Check if icon file exists
+    if os.path.exists(icon_path):
+        icon_file = icon_path
+        print(f"Using icon: {icon_file}")
+    else:
+        print(f"⚠️ Icon file not found: {icon_path}")
+        print("App will be built without custom icon")
+    
     cmd = [
         'nicegui-pack', 
         '--onefile', 
         '--windowed', # console off
         '--name', 'Report Generator',
         '--add-data', f'templates{path_separator}templates',  # Include templates folder
-        'main.py'
     ]
+    
+    # Add icon if available
+    if icon_file:
+        cmd.extend(['--icon', icon_file])
+    
+    cmd.append('main.py')
 
     print(f'Running command: {" ".join(cmd)}')
     try:

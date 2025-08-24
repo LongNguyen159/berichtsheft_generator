@@ -1,11 +1,30 @@
 from pathlib import Path
 from schemas import Fields
 from generator import insert_text_on_pdf
-from nicegui import ui
+from nicegui import ui, native
 from datetime import datetime, timedelta
+from multiprocessing import freeze_support  # noqa
+import sys
+import os
+freeze_support()  # noqa
+
+def get_resource_path(relative_path):
+    """Get absolute path to resource, works for dev and for PyInstaller"""
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except AttributeError:
+        # Development mode
+        base_path = Path(__file__).resolve().parent
+    return Path(base_path) / relative_path
 
 BASE_DIR = Path(__file__).resolve().parent
-TEMPLATE_PATH = BASE_DIR / "templates" / "berichtsheft_wochenlich_template.pdf"
+TEMPLATE_PATH = get_resource_path("templates/berichtsheft_wochenlich_template.pdf")
+
+# Verify template exists
+if not TEMPLATE_PATH.exists():
+    print(f"❌ Error: Template file not found at {TEMPLATE_PATH}")
+    sys.exit(1)
 
 # Global fields instance for the UI
 fields = Fields()
@@ -316,7 +335,7 @@ def main():
     create_ui()
     
     # Run the application
-    ui.run(title='Berichtsheft Generator', port=8080, show=True)
+    ui.run(title='Berichtsheft Generator', port=native.find_open_port(), show=False, native=True, reload=False)
 
 if __name__ in {"__main__", "__mp_main__"}:
     main()

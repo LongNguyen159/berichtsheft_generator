@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
-from typing import Tuple, Dict
+from typing import Tuple, Dict, Optional
 from reportlab.lib.pagesizes import A4
 from pathlib import Path
 import textwrap
+from datetime import datetime
 
 
 # PDF dimensions
@@ -89,3 +90,62 @@ class Fields:
         
         return result
 
+
+@dataclass
+class PersistedFields:
+    """Type-safe model for persisted configuration fields"""
+    # Basic information
+    name: str = ""
+    beruf: str = ""
+    abteilung: str = ""
+    ausbildung_jahr: str = ""
+    
+    # Configuration
+    week_no: str = ""
+    start_date: str = ""
+    end_date: str = ""
+    output_directory: str = ""
+    
+    # Metadata
+    last_saved: Optional[str] = None
+    
+    @classmethod
+    def from_fields(cls, fields: Fields) -> 'PersistedFields':
+        """Create PersistedFields from current Fields state"""
+        return cls(
+            name=fields.name.content,
+            beruf=fields.beruf.content,
+            abteilung=fields.abteilung.content,
+            ausbildung_jahr=fields.ausbildung_jahr.content,
+            week_no=fields.week_no.content,
+            start_date=fields.start_date.content,
+            end_date=fields.end_date.content,
+            output_directory=fields.output_directory.content,
+            last_saved=datetime.now().isoformat()
+        )
+    
+    def apply_to_fields(self, fields: Fields) -> None:
+        """Apply persisted values to Fields instance"""
+        fields.name.content = self.name
+        fields.beruf.content = self.beruf
+        fields.abteilung.content = self.abteilung
+        fields.ausbildung_jahr.content = self.ausbildung_jahr
+        fields.week_no.content = self.week_no
+        fields.start_date.content = self.start_date
+        fields.end_date.content = self.end_date
+        fields.output_directory.content = self.output_directory
+    
+    @classmethod
+    def from_dict(cls, data: dict) -> 'PersistedFields':
+        """Create PersistedFields from dictionary (for JSON loading)"""
+        return cls(
+            name=data.get("name", ""),
+            beruf=data.get("beruf", ""),
+            abteilung=data.get("abteilung", ""),
+            ausbildung_jahr=data.get("ausbildung_jahr", ""),
+            week_no=data.get("week_no", ""),
+            start_date=data.get("start_date", ""),
+            end_date=data.get("end_date", ""),
+            output_directory=data.get("output_directory", ""),
+            last_saved=data.get("last_saved")
+        )

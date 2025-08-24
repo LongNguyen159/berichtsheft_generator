@@ -4,19 +4,12 @@ from generator import insert_text_on_pdf
 from nicegui import ui, native
 from datetime import datetime, timedelta
 from multiprocessing import freeze_support  # noqa
-import sys
-import os
 freeze_support()  # noqa
+from file_manager import save_configuration, load_configuration, get_resource_path
+from sys import exit
 
-def get_resource_path(relative_path):
-    """Get absolute path to resource, works for dev and for PyInstaller"""
-    try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
-        base_path = sys._MEIPASS
-    except AttributeError:
-        # Development mode
-        base_path = Path(__file__).resolve().parent
-    return Path(base_path) / relative_path
+# Global fields instance for the UI
+fields = Fields()
 
 BASE_DIR = Path(__file__).resolve().parent
 TEMPLATE_PATH = get_resource_path("templates/berichtsheft_wochenlich_template.pdf")
@@ -24,10 +17,9 @@ TEMPLATE_PATH = get_resource_path("templates/berichtsheft_wochenlich_template.pd
 # Verify template exists
 if not TEMPLATE_PATH.exists():
     print(f"❌ Error: Template file not found at {TEMPLATE_PATH}")
-    sys.exit(1)
+    exit(1)
 
-# Global fields instance for the UI
-fields = Fields()
+
 
 def compute_end_date_from_start(start_date_str: str) -> str:
     """
@@ -118,9 +110,15 @@ def get_week_dates(base_date_str: str, weeks_offset: int) -> tuple[str, str]:
 
 def set_default_values():
     """Set default values for the fields"""
-    fields.name.content = "Thanh Long Nguyen"
-    fields.ausbildung_jahr.content = "2"
-    fields.hour_1.content = "40"
+    # Try to load saved configuration first
+    config_loaded = load_configuration(fields)
+    
+    # Only set defaults if no configuration was loaded
+    if not config_loaded:
+        fields.name.content = "Thanh Long Nguyen"
+        fields.ausbildung_jahr.content = "2"
+        fields.hour_1.content = "40"
+        # Output directory is already set in schema default
 
 def generate_pdf():
     """Generate the PDF with current field values"""
@@ -163,6 +161,9 @@ def generate_pdf():
         )
         
         ui.notify(f'PDF generated successfully: {output_file_path}', type='positive')
+        
+        # Auto-save configuration after successful PDF generation
+        save_configuration(fields)
         
     except Exception as e:
         ui.notify(f'Error generating PDF: {str(e)}', type='negative')
@@ -243,6 +244,9 @@ def create_ui():
                             new_week = max(1, int(current_week) - 1)  # Don't go below 1
                             fields.week_no.content = str(new_week)
                             week_input.value = str(new_week)
+                        
+                        # Auto-save after week change
+                        save_configuration(fields)
                 
                 def go_to_next_week():
                     base_date = fields.start_date.content or fields.end_date.content
@@ -262,6 +266,9 @@ def create_ui():
                         elif not current_week:  # If empty, start at 1
                             fields.week_no.content = "1"
                             week_input.value = "1"
+                        
+                        # Auto-save after week change
+                        save_configuration(fields)
                 
                 def go_to_current_week():
                     monday, friday = get_week_dates("", 0)  # Current week
@@ -322,8 +329,16 @@ def create_ui():
     #         date_sign_2_input = ui.input('Signature Date 2', value=fields.date_of_sign_2.content).style('flex: 1')
     #         date_sign_2_input.bind_value_to(fields.date_of_sign_2, 'content')
     
-    # Generate PDF button
-    with ui.row().style('width: 100%; max-width: 800px; margin: 1rem auto; text-align: center; border-radius: 22px; justify-content: center;'):
+    # Generate PDF button and Save Configuration
+    with ui.row().style('width: 100%; max-width: 800px; margin: 1rem auto; text-align: center; border-radius: 22px; justify-content: center; gap: 1rem;'):
+        def save_config():
+            success = save_configuration(fields)
+            if success:
+                ui.notify('Configuration saved successfully! ✅', type='positive')
+            else:
+                ui.notify('Failed to save configuration ❌', type='negative')
+        
+        # ui.button('💾 Save Settings', on_click=save_config).props('color=secondary size=md').style('border-radius: 100px;')
         ui.button('Generate PDF', on_click=generate_pdf).props('color=primary size=lg').style('border-radius: 100px;')
 
 def main():

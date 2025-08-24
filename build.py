@@ -42,7 +42,7 @@ def run_nicegui_pack():
     cmd = [
         'nicegui-pack', 
         '--onefile', 
-        '--windowed', 
+        '--windowed', # console off
         '--name', 'Report Generator',
         '--add-data', f'templates{path_separator}templates',  # Include templates folder
         'main.py'

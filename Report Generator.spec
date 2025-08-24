@@ -2,10 +2,10 @@
 
 
 a = Analysis(
-    ['main.py'],
+    ['src/main.py'],
     pathex=[],
     binaries=[],
-    datas=[('/Users/longnguyen/Documents/Programming/git-projects/berichtsheft_generator/.venv/lib/python3.12/site-packages/nicegui', 'nicegui'), ('templates', 'templates')],
+    datas=[('/Users/longnguyen/Documents/Programming/git-projects/berichtsheft_generator/.venv/lib/python3.12/site-packages/nicegui', 'nicegui'), ('assets/templates', 'assets/templates')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -35,11 +35,11 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['icons/app_icon.icns'],
+    icon=['assets/icons/app_icon.icns'],
 )
 app = BUNDLE(
     exe,
     name='Report Generator.app',
-    icon='icons/app_icon.icns',
+    icon='assets/icons/app_icon.icns',
     bundle_identifier=None,
 )

@@ -42,12 +42,12 @@ def run_nicegui_pack():
     # Determine icon file based on OS
     icon_file = None
     if system == 'Windows':
-        icon_path = 'icons/app_icon.ico'
+        icon_path = 'assets/icons/app_icon.ico'
     elif system == 'Darwin':  # macOS
-        icon_path = 'icons/app_icon.icns'
+        icon_path = 'assets/icons/app_icon.icns'
     else:  # Linux
-        icon_path = 'icons/app_icon.png'
-    
+        icon_path = 'assets/icons/app_icon.png'
+
     # Check if icon file exists
     if os.path.exists(icon_path):
         icon_file = icon_path
@@ -61,14 +61,14 @@ def run_nicegui_pack():
         '--onefile', 
         '--windowed', # console off
         '--name', 'Report Generator',
-        '--add-data', f'templates{path_separator}templates',  # Include templates folder
+        '--add-data', f'assets/templates{path_separator}assets/templates',  # Include templates folder
     ]
     
     # Add icon if available
     if icon_file:
         cmd.extend(['--icon', icon_file])
-    
-    cmd.append('main.py')
+
+    cmd.append('src/main.py')
 
     print(f'Running command: {" ".join(cmd)}')
     try:

@@ -1,18 +1,18 @@
 from pathlib import Path
-from schemas import Fields
-from generator import insert_text_on_pdf
+from src.schemas import Fields
+from src.generator import insert_text_on_pdf
 from nicegui import ui, native
 from datetime import datetime, timedelta
 from multiprocessing import freeze_support  # noqa
 freeze_support()  # noqa
-from file_manager import save_configuration, load_configuration, get_resource_path
+from src.file_manager import save_configuration, load_configuration, get_resource_path
 from sys import exit
 
 # Global fields instance for the UI
 fields = Fields()
 
 BASE_DIR = Path(__file__).resolve().parent
-TEMPLATE_PATH = get_resource_path("templates/berichtsheft_wochenlich_template.pdf")
+TEMPLATE_PATH = get_resource_path("assets/templates/berichtsheft_wochenlich_template.pdf")
 
 # Verify template exists
 if not TEMPLATE_PATH.exists():

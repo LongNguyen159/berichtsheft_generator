@@ -4,7 +4,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 import io
 import textwrap
-from schemas import Fields
+from src.schemas import Fields
 
 
 def create_overlay(data: dict, coords: dict, font="Helvetica", font_size=12, line_spacing=14, pagesize=A4, field_max_widths=None):

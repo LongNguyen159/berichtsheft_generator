@@ -12,7 +12,7 @@ def run_app():
     print("Starting Berichtsheft Generator...")
     
     # Now load the heavy modules
-    from main import main
+    from src.main import main
     main()
 
 if __name__ in {"__main__", "__mp_main__"}:

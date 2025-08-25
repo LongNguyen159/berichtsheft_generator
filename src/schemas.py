@@ -52,7 +52,7 @@ class Fields:
     date_of_sign_2: Field = field(default_factory=lambda: Field((305, adjust_y(716))))
     
     # UI configuration fields (not rendered to PDF)
-    output_directory: Field = field(default_factory=lambda: Field((0, 0), str(Path.home() / "Documents" / "School" / "Berichtsheft" / "berichtsheft AP2")))
+    output_directory: Field = field(default_factory=lambda: Field((0, 0)))
 
     def as_dict(self) -> Dict[str, Field]:
         """Return dict-like view, useful for iterating in PDF generator."""

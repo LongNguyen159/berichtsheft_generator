@@ -3,7 +3,7 @@ from dataclasses import asdict
 import sys
 import json
 from pathlib import Path
-from src.schemas import PersistedFields, Fields
+from schemas import PersistedFields, Fields
 
 
 def get_resource_path(relative_path):
